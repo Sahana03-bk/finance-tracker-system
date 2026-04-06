@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="pro-dashboard">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="pro-sidebar">
+        <div class="pro-sidebar-brand">
+            <div class="pro-brand-logo">FT</div>
+            <div>
+                <h2>Finance Tracker</h2>
+                <p>Dashboard Panel</p>
+            </div>
+        </div>
+
+        <nav class="pro-sidebar-nav">
+            <a href="/dashboard?username={{ user.username }}" class="pro-nav-item active">🏠 Dashboard</a>
+
+            {% if user.role|lower == "admin" %}
+                <a href="/add-transaction?username={{ user.username }}" class="pro-nav-item">➕ Add Transaction</a>
+            {% endif %}
+
+            <a href="/transactions-page?username={{ user.username }}" class="pro-nav-item">📄 View Transactions</a>
+
+            {% if user.role|lower == "admin" or user.role|lower == "analyst" %}
+                <a href="/transactions-page?username={{ user.username }}" class="pro-nav-item">🔍 Apply Filters</a>
+            {% endif %}
+
+            <a href="/summary-page?username={{ user.username }}" class="pro-nav-item">📊 View Summary</a>
+
+            {% if user.role|lower == "admin" %}
+    <a href="/recent-activity?username={{ user.username }}" class="pro-nav-item">🕒 Recent Activity</a>
+{% endif %}
+            <a href="/docs" target="_blank" class="pro-nav-item">📘 API Docs</a>
+            <a href="/" class="pro-nav-item">🏡 Go Home</a>
+        </nav>
+    </aside>
+
+    <!-- RIGHT CONTENT -->
+    <main class="pro-dashboard-main">
+
+        <!-- TOP HEADER -->
+        <div class="pro-topbar">
+            <div>
+                <h1 class="pro-dashboard-title">Dashboard</h1>
+                <p class="pro-dashboard-subtitle">Welcome to your Finance Tracker dashboard</p>
+            </div>
+
+            <!-- PROFILE -->
+            <div class="pro-profile-wrapper">
+                <button class="pro-profile-btn" onclick="toggleProfileMenu()">
+                    <div class="pro-avatar">{{ user.username[0]|upper }}</div>
+                    <div class="pro-profile-text">
+                        <span>{{ user.username }}</span>
+                        <small>{{ user.role|capitalize }}</small>
+                    </div>
+                    <span class="pro-profile-arrow">▾</span>
+                </button>
+
+                <div class="pro-profile-dropdown" id="profileDropdown">
+                    <div class="pro-profile-info">
+                        <div class="pro-avatar large">{{ user.username[0]|upper }}</div>
+                        <div>
+                            <p class="pro-dropdown-name">{{ user.username }}</p>
+                            <p class="pro-dropdown-role">{{ user.role|capitalize }}</p>
+                        </div>
+                    </div>
+
+                    <a href="/" class="pro-logout-btn">🚪 Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- WELCOME CARD -->
+        <section class="pro-welcome-card">
+            <div>
+                <h2>Hello, {{ user.username }} 👋</h2>
+                <p>Login successful! You are now inside the dashboard.</p>
+            </div>
+            <span class="pro-role-badge">{{ user.role|capitalize }}</span>
+        </section>
+
+        <!-- INFO CARDS -->
+        <section class="pro-info-grid">
+            <div class="pro-info-card">
+                <h3>Username</h3>
+                <p>{{ user.username }}</p>
+            </div>
+
+            <div class="pro-info-card">
+                <h3>Role</h3>
+                <p>{{ user.role|capitalize }}</p>
+            </div>
+
+            <div class="pro-info-card wide">
+                <h3>Access Level</h3>
+                {% if user.role|lower == "admin" %}
+                    <p>Full access to create, update, delete, and manage records.</p>
+                {% elif user.role|lower == "analyst" %}
+                    <p>Can view records, apply filters, and access detailed insights.</p>
+                {% else %}
+                    <p>Can view financial records and summaries only.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- QUICK ACTIONS -->
+        <section class="pro-actions-card">
+            <h3>Quick Actions</h3>
+            <div class="pro-action-grid">
+
+                {% if user.role|lower == "admin" %}
+                    <a href="/add-transaction?username={{ user.username }}" class="pro-action-btn primary">Add Transaction</a>
+                {% endif %}
+
+                <a href="/transactions-page?username={{ user.username }}" class="pro-action-btn primary">View Transactions</a>
+
+                {% if user.role|lower == "admin" or user.role|lower == "analyst" %}
+                    <a href="/transactions-page?username={{ user.username }}" class="pro-action-btn primary">Apply Filters</a>
+                {% endif %}
+
+                <a href="/summary-page?username={{ user.username }}" class="pro-action-btn primary">View Summary</a>
+                <a href="/docs" target="_blank" class="pro-action-btn secondary">Open API Docs</a>
+                <a href="/" class="pro-action-btn secondary">Go Home</a>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    function toggleProfileMenu() {
+        const menu = document.getElementById("profileDropdown");
+        menu.classList.toggle("show");
+    }
+
+    window.addEventListener("click", function(e) {
+        const wrapper = document.querySelector(".pro-profile-wrapper");
+        const menu = document.getElementById("profileDropdown");
+
+        if (wrapper && !wrapper.contains(e.target)) {
+            menu.classList.remove("show");
+        }
+    });
+</script>
+{% endblock %}

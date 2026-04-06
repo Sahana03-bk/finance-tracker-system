@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Transactions - Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="dashboard-card">
+    <h1>Transactions</h1>
+    <p class="subtitle">View and manage financial records</p>
+
+    <div class="info-box">
+        <p><strong>Logged in as:</strong> {{ user.username }}</p>
+        <p><strong>Role:</strong> {{ user.role }}</p>
+    </div>
+
+    <!-- FILTERS: Only Analyst and Admin -->
+    {% if user.role|lower == "analyst" or user.role|lower == "admin" %}
+<div class="filter-card">
+    <h3>Filter & Search Transactions</h3>
+
+    <form method="get" action="/transactions-page" class="filter-form">
+        <input type="hidden" name="username" value="{{ user.username }}">
+
+        <div class="filter-grid">
+            <div class="form-group">
+                <label>Search</label>
+                <input type="text" name="search" placeholder="Search by category or note" value="{{ selected_search }}">
+            </div>
+
+            <div class="form-group">
+                <label>Type</label>
+                <select name="type">
+                    <option value="">All</option>
+                    <option value="income" {% if selected_type == "income" %}selected{% endif %}>Income</option>
+                    <option value="expense" {% if selected_type == "expense" %}selected{% endif %}>Expense</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <input type="text" name="category" placeholder="Enter category" value="{{ selected_category }}">
+            </div>
+
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" name="start_date" value="{{ selected_start_date }}">
+            </div>
+
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="date" name="end_date" value="{{ selected_end_date }}">
+            </div>
+        </div>
+
+        <div class="button-group" style="margin-top: 16px;">
+            <button type="submit" class="btn primary-btn">Apply</button>
+            <a href="/transactions-page?username={{ user.username }}" class="btn secondary-btn">Reset</a>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+    {% if transactions %}
+        <div class="table-wrapper">
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Note</th>
+                        {% if user.role|lower == "admin" %}
+                        <th>Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in transactions %}
+                    <tr>
+                        <td>{{ t.id }}</td>
+                        <td>₹{{ "%.2f"|format(t.amount) }}</td>
+                        <td>
+                            {% if t.type == "income" %}
+                                <span class="badge income-badge">Income</span>
+                            {% else %}
+                                <span class="badge expense-badge">Expense</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ t.category }}</td>
+                        <td>{{ t.date }}</td>
+                        <td>{{ t.note or "-" }}</td>
+
+                        {% if user.role|lower == "admin" %}
+                        <td>
+                            <div class="table-action-buttons">
+                                <a href="/edit-transaction/{{ t.id }}?username={{ user.username }}" class="btn mini-btn secondary-btn">Edit</a>
+
+                                <form method="post" action="/delete-transaction/{{ t.id }}?username={{ user.username }}" style="display:inline;">
+                                    <button type="submit" class="btn mini-btn danger-btn"
+                                        onclick="return confirm('Are you sure you want to delete this transaction?')">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert error-alert">
+            No transactions found for the selected criteria.
+        </div>
+    {% endif %}
+
+    {% if total_pages and total_pages > 1 %}
+<div class="pagination-bar">
+    {% if current_page > 1 %}
+        <a href="/transactions-page?username={{ user.username }}&page={{ current_page - 1 }}{% if selected_search %}&search={{ selected_search }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_start_date %}&start_date={{ selected_start_date }}{% endif %}{% if selected_end_date %}&end_date={{ selected_end_date }}{% endif %}" class="btn secondary-btn">
+            ← Previous
+        </a>
+    {% endif %}
+
+    <span class="pagination-info">Page {{ current_page }} of {{ total_pages }}</span>
+
+    {% if current_page < total_pages %}
+        <a href="/transactions-page?username={{ user.username }}&page={{ current_page + 1 }}{% if selected_search %}&search={{ selected_search }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_start_date %}&start_date={{ selected_start_date }}{% endif %}{% if selected_end_date %}&end_date={{ selected_end_date }}{% endif %}" class="btn secondary-btn">
+            Next →
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
+
+<div class="button-group" style="margin-top: 20px;">
+    <a href="/export-transactions-csv?username={{ user.username }}{% if selected_search %}&search={{ selected_search }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_start_date %}&start_date={{ selected_start_date }}{% endif %}{% if selected_end_date %}&end_date={{ selected_end_date }}{% endif %}" class="btn secondary-btn">
+        Export CSV
+    </a>
+
+    <a href="/export-transactions-json?username={{ user.username }}{% if selected_search %}&search={{ selected_search }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_start_date %}&start_date={{ selected_start_date }}{% endif %}{% if selected_end_date %}&end_date={{ selected_end_date }}{% endif %}" class="btn secondary-btn">
+        Export JSON
+    </a>
+</div>
+    <div class="button-group action-buttons" style="margin-top: 24px;">
+        {% if user.role|lower == "admin" %}
+            <a href="/add-transaction?username={{ user.username }}" class="btn primary-btn">Add Transaction</a>
+        {% endif %}
+
+        <a href="/summary-page?username={{ user.username }}" class="btn secondary-btn">View Summary</a>
+        <a href="/dashboard?username={{ user.username }}" class="btn secondary-btn">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

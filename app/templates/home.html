@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Finance Tracker{% endblock %}
+
+{% block content %}
+
+<div class="landing-page">
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+
+        <div class="hero-content">
+            <span class="hero-badge">Track • Manage • Analyze</span>
+
+            <h1 class="hero-title">
+                Smart Finance <span>Tracker</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                A modern finance management platform to track income, expenses, balance,
+                and insights in one clean dashboard.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="/login-page" class="btn primary-btn">Login to Dashboard</a>
+                <a href="/docs" target="_blank" class="btn secondary-btn">Open API Docs</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURE SECTION -->
+    <section class="features-section">
+        <div class="section-header">
+            <p class="section-tag">Core Features</p>
+            <h2>Everything You Need in One Finance Dashboard</h2>
+        </div>
+
+        <div class="feature-grid">
+            <div class="landing-feature-card blue-card">
+                <div class="landing-icon">🔐</div>
+                <h3>Role-Based Access</h3>
+                <p>Secure access for viewer, analyst, and admin users with clear role permissions.</p>
+            </div>
+
+            <div class="landing-feature-card green-card">
+                <div class="landing-icon">💳</div>
+                <h3>Transaction Management</h3>
+                <p>Add, edit, delete, filter, and organize income and expense records with ease.</p>
+            </div>
+
+            <div class="landing-feature-card purple-card">
+                <div class="landing-icon">📈</div>
+                <h3>Summary Analytics</h3>
+                <p>Track total income, expenses, balance, category insights, and monthly financial reports.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HIGHLIGHT STATS -->
+    <section class="highlight-section">
+        <div class="highlight-card">
+            <div class="highlight-box">
+                <h3>Secure</h3>
+                <p>Authentication + Roles</p>
+            </div>
+            <div class="highlight-box">
+                <h3>Fast</h3>
+                <p>Built with FastAPI</p>
+            </div>
+            <div class="highlight-box">
+                <h3>Simple</h3>
+                <p>Clean & Easy UI</p>
+            </div>
+            <div class="highlight-box">
+                <h3>Scalable</h3>
+                <p>Backend Friendly Design</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROJECT OVERVIEW -->
+    <section class="overview-section">
+        <div class="section-header">
+            <p class="section-tag">Why Choose Us</p>
+            <h2>Why Choose Finance Tracker?</h2>
+        </div>
+
+        <div class="overview-grid">
+            <div class="overview-card">
+                <h3>Secure Authentication</h3>
+                <p>Role-based login and access control ensure a secure and reliable user experience.</p>
+            </div>
+
+            <div class="overview-card">
+                <h3>Powerful Dashboard</h3>
+                <p>Manage transactions, filters, summaries, and reports in one organized interface.</p>
+            </div>
+
+            <div class="overview-card">
+                <h3>Smart Insights</h3>
+                <p>Monitor income, expenses, balance, and monthly trends for better financial visibility.</p>
+            </div>
+        </div>
+
+        <div class="overview-buttons">
+            <a href="/login-page" class="btn primary-btn">Login to Dashboard</a>
+            <a href="/docs" target="_blank" class="btn secondary-btn">Test APIs</a>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

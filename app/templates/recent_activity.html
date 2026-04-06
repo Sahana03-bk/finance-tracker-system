@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Recent Activity - Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="pro-dashboard">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="pro-sidebar">
+        <div class="pro-sidebar-brand">
+            <div class="pro-brand-logo">FT</div>
+            <div>
+                <h2>Finance Tracker</h2>
+                <p>Admin Panel</p>
+            </div>
+        </div>
+
+        <nav class="pro-sidebar-nav">
+            <a href="/dashboard?username={{ user.username }}" class="pro-nav-item">🏠 Dashboard</a>
+
+            {% if user.role|lower == "admin" %}
+                <a href="/add-transaction?username={{ user.username }}" class="pro-nav-item">➕ Add Transaction</a>
+            {% endif %}
+
+            <a href="/transactions-page?username={{ user.username }}" class="pro-nav-item">📄 View Transactions</a>
+
+            {% if user.role|lower == "admin" or user.role|lower == "analyst" %}
+                <a href="/transactions-page?username={{ user.username }}" class="pro-nav-item">🔍 Apply Filters</a>
+            {% endif %}
+
+            <a href="/summary-page?username={{ user.username }}" class="pro-nav-item">📊 View Summary</a>
+
+            {% if user.role|lower == "admin" %}
+                <a href="/recent-activity?username={{ user.username }}" class="pro-nav-item active">🕒 Recent Activity</a>
+            {% endif %}
+
+            <a href="/docs" target="_blank" class="pro-nav-item">📘 API Docs</a>
+            <a href="/" class="pro-nav-item">🏡 Go Home</a>
+        </nav>
+    </aside>
+
+    <!-- RIGHT CONTENT -->
+    <main class="pro-dashboard-main">
+
+        <!-- TOPBAR -->
+        <div class="pro-topbar">
+            <div>
+                <h1 class="pro-dashboard-title">Recent Activity</h1>
+                <p class="pro-dashboard-subtitle">Admin-only login audit trail for analyst and viewer users</p>
+            </div>
+
+            <div class="pro-profile-wrapper">
+                <div class="pro-profile-btn">
+                    <div class="pro-avatar">{{ user.username[0]|upper }}</div>
+                    <div class="pro-profile-text">
+                        <span>{{ user.username }}</span>
+                        <small>{{ user.role|capitalize }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUMMARY CARDS -->
+        <section class="activity-summary-grid">
+            <div class="activity-summary-card blue">
+                <h3>Total Records</h3>
+                <p>{{ login_activities|length }}</p>
+            </div>
+
+            <div class="activity-summary-card purple">
+                <h3>Analyst Logins</h3>
+                <p>{{ login_activities | selectattr("role", "equalto", "analyst") | list | length }}</p>
+            </div>
+
+            <div class="activity-summary-card orange">
+                <h3>Viewer Logins</h3>
+                <p>{{ login_activities | selectattr("role", "equalto", "viewer") | list | length }}</p>
+            </div>
+        </section>
+
+        <!-- TABLE CARD -->
+        <section class="recent-activity-card">
+            <div class="recent-activity-header">
+                <h3>Role-Based Login Audit Trail</h3>
+                <span class="recent-activity-badge">Admin Monitoring</span>
+            </div>
+
+            {% if login_activities and login_activities|length > 0 %}
+                <div class="recent-activity-table-wrapper">
+                    <table class="recent-activity-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Login Date</th>
+                                <th>Login Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in login_activities %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ activity.username }}</td>
+                                <td>
+                                    <span class="activity-role-pill {{ activity.role|lower }}">
+                                        {{ activity.role|capitalize }}
+                                    </span>
+                                </td>
+                                <td>{{ activity.login_time.strftime('%d-%m-%Y') }}</td>
+                                <td>{{ activity.login_time.strftime('%I:%M %p') }}</td>
+                                <td>
+                                    <span class="activity-status-pill">
+                                        {{ activity.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="recent-activity-empty">
+                    No login activity found yet for analyst or viewer users.
+                </div>
+            {% endif %}
+        </section>
+
+    </main>
+</div>
+{% endblock %}

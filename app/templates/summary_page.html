@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Summary - Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="pro-dashboard">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="pro-sidebar">
+        <div class="pro-sidebar-brand">
+            <div class="pro-brand-logo">FT</div>
+            <div>
+                <h2>Finance Tracker</h2>
+                <p>Analytics Panel</p>
+            </div>
+        </div>
+
+        <nav class="pro-sidebar-nav">
+            <a href="/dashboard?username={{ user.username }}" class="pro-nav-item">🏠 Dashboard</a>
+
+            {% if user.role|lower == "admin" %}
+                <a href="/add-transaction?username={{ user.username }}" class="pro-nav-item">➕ Add Transaction</a>
+            {% endif %}
+
+            <a href="/transactions-page?username={{ user.username }}" class="pro-nav-item">📄 View Transactions</a>
+
+            {% if user.role|lower == "admin" or user.role|lower == "analyst" %}
+                <a href="/transactions-page?username={{ user.username }}" class="pro-nav-item">🔍 Apply Filters</a>
+            {% endif %}
+
+            <a href="/summary-page?username={{ user.username }}" class="pro-nav-item active">📊 View Summary</a>
+
+            {% if user.role|lower == "admin" %}
+                <a href="/recent-activity?username={{ user.username }}" class="pro-nav-item">🕒 Recent Activity</a>
+            {% endif %}
+
+            <a href="/docs" target="_blank" class="pro-nav-item">📘 API Docs</a>
+            <a href="/" class="pro-nav-item">🏡 Go Home</a>
+        </nav>
+    </aside>
+
+    <!-- RIGHT CONTENT -->
+    <main class="pro-dashboard-main">
+
+        <!-- TOPBAR -->
+        <div class="pro-topbar">
+            <div>
+                <h1 class="pro-dashboard-title">Financial Overview</h1>
+                <p class="pro-dashboard-subtitle">Track performance, trends, categories, and recent transactions</p>
+            </div>
+
+            <div class="pro-profile-wrapper">
+                <div class="pro-profile-btn">
+                    <div class="pro-avatar">{{ user.username[0]|upper }}</div>
+                    <div class="pro-profile-text">
+                        <span>{{ user.username }}</span>
+                        <small>{{ user.role|capitalize }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI CARDS -->
+        <section class="analytics-summary-grid">
+            <div class="analytics-card income">
+                <div class="analytics-card-icon">💰</div>
+                <div>
+                    <h3>Total Income</h3>
+                    <p>₹{{ "%.2f"|format(total_income) }}</p>
+                </div>
+            </div>
+
+            <div class="analytics-card expense">
+                <div class="analytics-card-icon">💸</div>
+                <div>
+                    <h3>Total Expenses</h3>
+                    <p>₹{{ "%.2f"|format(total_expenses) }}</p>
+                </div>
+            </div>
+
+            <div class="analytics-card balance">
+                <div class="analytics-card-icon">🏦</div>
+                <div>
+                    <h3>Net Balance</h3>
+                    <p>₹{{ "%.2f"|format(current_balance) }}</p>
+                </div>
+            </div>
+
+            <div class="analytics-card total">
+                <div class="analytics-card-icon">📑</div>
+                <div>
+                    <h3>Total Records</h3>
+                    <p>{{ total_transactions }}</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHARTS ROW -->
+        <section class="summary-charts-grid">
+
+            <!-- MONTHLY TREND (WIDER) -->
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h3>Monthly Financial Trend</h3>
+                    <span class="chart-badge">Bar Chart</span>
+                </div>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="monthlyBarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- CATEGORY BREAKDOWN (SMALLER) -->
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h3>Expense Breakdown</h3>
+                    <span class="chart-badge">Doughnut</span>
+                </div>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="categoryPieChart"></canvas>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- CATEGORY + MONTHLY TABLES SIDE BY SIDE -->
+        <section class="analytics-dual-grid">
+
+            <!-- CATEGORY TABLE -->
+            <section class="analytics-table-card compact-table-card">
+                <div class="analytics-table-header">
+                    <h3>Category-wise Breakdown</h3>
+                    <span class="analytics-table-badge">Category Analysis</span>
+                </div>
+
+                {% if category_breakdown %}
+                    <div class="analytics-table-wrapper">
+                        <table class="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Category</th>
+                                    <th>Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in category_breakdown %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ item.category }}</td>
+                                    <td>₹{{ "%.2f"|format(item.total) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="analytics-empty-state">No category data available.</div>
+                {% endif %}
+            </section>
+
+            <!-- MONTHLY TABLE -->
+            <section class="analytics-table-card compact-table-card">
+                <div class="analytics-table-header">
+                    <h3>Monthly Totals</h3>
+                    <span class="analytics-table-badge">Trend Summary</span>
+                </div>
+
+                {% if monthly_totals %}
+                    <div class="analytics-table-wrapper">
+                        <table class="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Month</th>
+                                    <th>Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in monthly_totals %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ item.month }}</td>
+                                    <td>₹{{ "%.2f"|format(item.total) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="analytics-empty-state">No monthly data available.</div>
+                {% endif %}
+            </section>
+
+        </section>
+
+        <!-- RECENT ACTIVITY -->
+        <section class="analytics-table-card">
+            <div class="analytics-table-header">
+                <h3>Recent Financial Activity</h3>
+                <span class="analytics-table-badge">Latest 5 Records</span>
+            </div>
+
+            {% if recent_activity %}
+                <div class="analytics-table-wrapper">
+                    <table class="analytics-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Amount</th>
+                                <th>Type</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in recent_activity %}
+                            <tr>
+                                <td>{{ t.id }}</td>
+                                <td>₹{{ "%.2f"|format(t.amount) }}</td>
+                                <td>
+                                    {% if t.type == "income" %}
+                                        <span class="analytics-badge income-badge-analytics">Income</span>
+                                    {% else %}
+                                        <span class="analytics-badge expense-badge-analytics">Expense</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ t.category }}</td>
+                                <td>{{ t.date }}</td>
+                                <td>{{ t.note or "-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="analytics-empty-state">No recent activity available.</div>
+            {% endif %}
+        </section>
+
+    </main>
+</div>
+
+<!-- CHART.JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const categoryLabels = {{ category_labels | tojson }};
+    const categoryValues = {{ category_values | tojson }};
+    const monthlyLabels = {{ monthly_labels | tojson }};
+    const monthlyValues = {{ monthly_values | tojson }};
+
+    // MONTHLY BAR CHART
+    const barCtx = document.getElementById('monthlyBarChart');
+
+    if (barCtx && monthlyLabels.length > 0) {
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: monthlyLabels,
+                datasets: [{
+                    label: 'Monthly Total',
+                    data: monthlyValues,
+                    backgroundColor: '#2563eb',
+                    borderRadius: 10,
+                    borderSkipped: false,
+                    maxBarThickness: 42
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'rectRounded'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.18)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // DOUGHNUT CHART
+    const pieCtx = document.getElementById('categoryPieChart');
+
+    if (pieCtx && categoryLabels.length > 0) {
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryValues,
+                    backgroundColor: [
+                        '#2563eb',
+                        '#16a34a',
+                        '#f97316',
+                        '#7c3aed',
+                        '#dc2626',
+                        '#0ea5e9',
+                        '#14b8a6',
+                        '#eab308',
+                        '#8b5cf6',
+                        '#f43f5e'
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '62%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 14,
+                            boxWidth: 10
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}
