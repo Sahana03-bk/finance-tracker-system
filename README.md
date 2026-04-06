@@ -47,7 +47,7 @@ finance-tracker-system/
 │
 │── requirements.txt
 │── README.md
-
+```
 
 ## 🚀 Project Overview
 
