@@ -89,34 +89,7 @@ This project is designed to go beyond a basic CRUD app by including **role-based
 
 ---
 
-## 📂 Project Structure
 
-```bash
-finance-tracker-system/
-│── app/
-│   │── __init__.py
-│   │── main.py
-│   │── models.py
-│   │── schemas.py
-│   │── database.py
-│   │── auth.py
-│   │
-│   ├── templates/
-│   │   │── base.html
-│   │   │── home.html
-│   │   │── login_page.html
-│   │   │── dashboard.html
-│   │   │── add_transaction.html
-│   │   │── transactions_page.html
-│   │   │── edit_transaction.html
-│   │   │── summary_page.html
-│   │   │── recent_activity.html
-│   │
-│   ├── static/
-│   │   │── style.css
-│
-│── requirements.txt
-│── README.md
 ✨ Features
 
 ## 👥 Role-Based Access Control
