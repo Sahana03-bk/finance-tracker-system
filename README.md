@@ -49,6 +49,60 @@ finance-tracker-system/
 │── README.md
 ```
 
+## ⚙️ Installation Steps
+
+### 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/Sahana03-bk/finance-tracker-system.git
+cd finance-tracker-system
+
+### 2️⃣ Create a virtual environment
+
+```bash
+python -m venv venv
+```
+
+### 3️⃣ Activate the virtual environment
+
+**On Windows**
+```bash
+venv\Scripts\activate
+```
+
+**On Mac/Linux**
+```bash
+source venv/bin/activate
+```
+
+### 4️⃣ Install project dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 5️⃣ Run the FastAPI application
+
+```bash
+uvicorn app.main:app --reload
+```
+
+### 6️⃣ Open the application in your browser
+
+- **Home Page:** http://127.0.0.1:8000/
+- **Swagger API Docs:** http://127.0.0.1:8000/docs
+
+### 7️⃣ Default Test Users (if using seeded/demo data)
+
+Use these sample credentials to test different role-based behaviors:
+
+| Role    | Username  | Password    |
+|---------|-----------|-------------|
+| Viewer  | viewer1   | viewer123   |
+| Analyst | analyst1  | analyst123  |
+| Admin   | admin1    | admin123    |
+
+
+
 ## 🚀 Project Overview
 
 The **Finance Tracker System** is a backend-focused internship project with a modern frontend interface.
@@ -429,56 +483,4 @@ The project supports exporting transaction data in:
 - `/summary`
 
 ---
-
-## ⚙️ Installation Steps
-
-### 1️⃣ Clone the Repository
-```bash
-git clone https://github.com/Sahana03-bk/finance-tracker-system.git
-cd finance-tracker-system
-
-### 2️⃣ Create a virtual environment
-
-```bash
-python -m venv venv
-```
-
-### 3️⃣ Activate the virtual environment
-
-**On Windows**
-```bash
-venv\Scripts\activate
-```
-
-**On Mac/Linux**
-```bash
-source venv/bin/activate
-```
-
-### 4️⃣ Install project dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 5️⃣ Run the FastAPI application
-
-```bash
-uvicorn app.main:app --reload
-```
-
-### 6️⃣ Open the application in your browser
-
-- **Home Page:** http://127.0.0.1:8000/
-- **Swagger API Docs:** http://127.0.0.1:8000/docs
-
-### 7️⃣ Default Test Users (if using seeded/demo data)
-
-Use these sample credentials to test different role-based behaviors:
-
-| Role    | Username  | Password    |
-|---------|-----------|-------------|
-| Viewer  | viewer1   | viewer123   |
-| Analyst | analyst1  | analyst123  |
-| Admin   | admin1    | admin123    |
 
