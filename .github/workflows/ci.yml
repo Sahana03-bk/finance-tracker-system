@@ -1,0 +1,16 @@
+name: My First GitHub Action
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Check Python
+        run: python --version
