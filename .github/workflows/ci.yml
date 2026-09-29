@@ -20,5 +20,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Check Python
-        run: python --version
+      - name: Install testing tools
+        run: pip install pytest httpx
+
+      - name: Run tests
+        run: pytest
